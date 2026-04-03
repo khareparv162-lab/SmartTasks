@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartTasks</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">SmartTasks</span>
+      </div>
+      <button class="sidebar-close" id="sidebarClose">✕</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <p class="nav-label">Filters</p>
+      <button class="nav-item active" data-filter-status="all">
+        <span class="nav-icon">⬡</span> All Tasks
+        <span class="nav-badge" id="badge-all">0</span>
+      </button>
+      <button class="nav-item" data-filter-status="pending">
+        <span class="nav-icon">◷</span> Pending
+        <span class="nav-badge" id="badge-pending">0</span>
+      </button>
+      <button class="nav-item" data-filter-status="completed">
+        <span class="nav-icon">◉</span> Completed
+        <span class="nav-badge" id="badge-completed">0</span>
+      </button>
+
+      <p class="nav-label" style="margin-top:2rem">Categories</p>
+      <button class="nav-item" data-filter-category="all">
+        <span class="nav-icon">◈</span> All Categories
+      </button>
+      <button class="nav-item" data-filter-category="work">
+        <span class="nav-icon cat-work">▣</span> Work
+      </button>
+      <button class="nav-item" data-filter-category="study">
+        <span class="nav-icon cat-study">▤</span> Study
+      </button>
+      <button class="nav-item" data-filter-category="personal">
+        <span class="nav-icon cat-personal">▥</span> Personal
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle">
+        <span class="theme-icon" id="themeIcon">☀</span>
+        <span id="themeLabel">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- overlay for mobile -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- main content -->
+  <main class="main">
+
+    <!-- top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="page-title">
+          <h1 id="pageTitle">All Tasks</h1>
+          <p class="page-subtitle" id="pageSubtitle">Manage everything in one place</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="searchInput" placeholder="Search tasks…" autocomplete="off" />
+          <button class="search-clear" id="searchClear">✕</button>
+        </div>
+        <div class="sort-wrap">
+          <select id="sortSelect">
+            <option value="created">Newest</option>
+            <option value="priority">Priority</option>
+            <option value="dueDate">Due Date</option>
+            <option value="title">Title A–Z</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="addTaskBtn">
+          <span>＋</span> New Task
+        </button>
+      </div>
+    </header>
+
+    <!-- stats section -->
+    <section class="stats-bar">
+      <div class="stat-card">
+        <span class="stat-num" id="statTotal">0</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num high" id="statHigh">0</span>
+        <span class="stat-label">High Priority</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num pending" id="statPending">0</span>
+        <span class="stat-label">Pending</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num done" id="statDone">0</span>
+        <span class="stat-label">Completed</span>
+      </div>
+      <div class="stat-card progress-card">
+        <div class="progress-label">
+          <span>Progress</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- task cards go here -->
+    <section class="task-grid" id="taskGrid"></section>
+
+    <!-- shown when no tasks found -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-icon">◈</div>
+      <h2>No tasks found</h2>
+      <p>Your workspace is clear. Add a new task to get started.</p>
+      <button class="btn-primary" id="emptyAddBtn">＋ Add First Task</button>
+    </div>
+
+  </main>
+
+  <!-- modal backdrop -->
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <!-- add/edit task modal -->
+  <div class="modal" id="taskModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-header">
+      <h2 id="modalTitle">New Task</h2>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="taskTitle">Title <span class="req">*</span></label>
+        <input type="text" id="taskTitle" placeholder="What needs to be done?" maxlength="80" />
+        <span class="char-count" id="charCount">0/80</span>
+      </div>
+      <div class="form-group">
+        <label for="taskDesc">Description</label>
+        <textarea id="taskDesc" rows="3" placeholder="Add some details…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="taskPriority">Priority</label>
+          <div class="custom-select-wrap">
+            <select id="taskPriority">
+              <option value="high">🔴 High</option>
+              <option value="medium" selected>🟡 Medium</option>
+              <option value="low">🟢 Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="taskCategory">Category</label>
+          <div class="custom-select-wrap">
+            <select id="taskCategory">
+              <option value="work">Work</option>
+              <option value="study">Study</option>
+              <option value="personal">Personal</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="taskDue">Due Date</label>
+        <input type="date" id="taskDue" />
+      </div>
+      <input type="hidden" id="editId" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="cancelBtn">Cancel</button>
+      <button class="btn-primary" id="saveTaskBtn">Save Task</button>
+    </div>
+  </div>
+
+  <!-- delete confirm popup -->
+  <div class="confirm-modal" id="confirmModal" role="alertdialog" aria-modal="true">
+    <div class="confirm-icon">⚠</div>
+    <h3>Delete Task?</h3>
+    <p>This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-ghost" id="confirmCancel">Keep It</button>
+      <button class="btn-danger" id="confirmDelete">Delete</button>
+    </div>
+  </div>
+
+  <!-- toast notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
