@@ -1,4 +1,5 @@
 SmartTasks: Tasks Manager
+
 It is a website which can be used to manage tasks according to their priority.
 
 TechStacks Used:
