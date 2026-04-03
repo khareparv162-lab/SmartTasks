@@ -8,7 +8,11 @@ TechStacks Used:
 *JavaScript
 
 Features:
+
 *Set the tasks according to priority
+
 *Add or delete multiple tasks 
+
 *After Completion of task Mark it
+
 *Add Due date and category
